@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EmailStatus {
+  PENDING
+  SCHEDULED
+  PROCESSING
+  SENT
+  FAILED
+}
+
+model Email {
+  id          String      @id @default(uuid())
+  sender      String
+  recipient   String
+  subject     String
+  body        String
+
+  scheduledAt DateTime
+  status      EmailStatus @default(PENDING)
+
+  jobId       String?     @unique
+  sentAt      DateTime?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([status, scheduledAt])
+  @@index([sender, scheduledAt])
+}
